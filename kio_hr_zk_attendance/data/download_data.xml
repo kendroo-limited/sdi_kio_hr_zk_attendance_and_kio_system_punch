@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<odoo noupdate="1">
+	<record forcecreate="True" id="cron_download_data" model="ir.cron">
+		<field name="name">Download Data Cron</field>
+		<field eval="True" name="active"/>
+		<field name="user_id" ref="base.user_admin"/>
+		<field name="interval_number">10</field>
+		<field name="interval_type">minutes</field>
+		<field name="numbercall">-1</field>	
+		<field name="model_id" ref="kio_hr_zk_attendance.model_zk_machine"/>
+		<field name="state">code</field>
+		<field name="code">model.cron_download()</field>
+	</record>
+
+	<record id="auto_checkout_cron_job" model="ir.cron">
+		<field name="name">Auto Checkout Cron</field>
+		<field name="model_id" ref="model_hr_attendance"/>
+		<field name="user_id" ref="base.user_root"/>
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="code">env['hr.attendance'].auto_checkout_employees()</field>
+		<field name="doall" eval="False"/>
+		<field name="active" eval="True"/>
+	</record>
+
+	<record id="error_device_connection" model="ir.cron">
+		<field name="name">Error device connection cron</field>
+		<field name="model_id" ref="kio_hr_zk_attendance.model_zk_machine"/>
+		<field name="user_id" ref="base.user_root"/>
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="code">env['zk.machine'].error_device_connection()</field>
+		<field name="doall" eval="False"/>
+		<field name="active" eval="True"/>
+	</record>
+
+	<!-- <record id="set_attendance_checked_in_cron_job" model="ir.cron">
+		<field name="name">Set Attendance to Checked In Cron</field>
+		<field name="model_id" ref="kio_hr_zk_attendance.model_zk_machine"/>
+		<field name="user_id" ref="base.user_root"/>
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="code">env['zk.machine'].reset_mode()</field>
+		<field name="doall" eval="False"/>
+		<field name="active" eval="True"/>
+	</record> -->
+
+</odoo>

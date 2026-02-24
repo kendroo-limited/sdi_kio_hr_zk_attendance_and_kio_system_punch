@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_attendance_dashboard_employee,access.attendance.dashboard.employee,model_attendance_dashboard,hr_attendance.group_hr_attendance_own_reader,1,1,1,0
+access_attendance_dashboard_officer,access.attendance.dashboard.officer,model_attendance_dashboard,hr_attendance.group_hr_attendance_officer,1,1,1,1
+access_attendance_dashboard_manager,access.attendance.dashboard.manager,model_attendance_dashboard,hr_attendance.group_hr_attendance_manager,1,1,1,1

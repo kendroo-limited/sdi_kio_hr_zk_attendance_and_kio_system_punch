@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!-- Customize Attendance Report -->
+    <record id="inherited_view_attendance_tree" model="ir.ui.view">
+        <field name="name">inherited_hr.attendance.tree</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <tree string="Employee attendances">
+                <field name="check_in_location"/>
+                <field name="check_out_location"/>
+                <field name="address_id"/>
+                <field name="company_id"/>
+                <field name="total_punches" optional = "hide" readonly="1"/>
+                <field name = "device_no" optional = "hide" readonly="1"/>
+                <!-- <field name="machine_id" /> -->
+                <!-- <field name="worked_hours" type="measure"/> -->
+            </tree>
+        </field>
+    </record>
+
+    <record id="inherited_hr_attendance_view_filter" model="ir.ui.view">
+        <field name="name">inherited_hr_attendance_view_filter</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter"/>
+        <field name="arch" type="xml">
+            <search string="Hr Attendance Search">
+                <group expand="0" string="Group By">
+                    <separator/>
+                	<filter name="date" string="Date" context="{'group_by':'check_in:day'}"/>
+                    <filter string = "Device Address" name = "address_id" context ="{'group_by':'address_id'}"/>
+                    <filter string = "Company" name = "company_id" context ="{'group_by':'company_id'}"/>
+                    <filter string = "Device No" name = "device_no" context = "{'group_by':'device_no'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+        	
+    <record id="view_zk_report_daily_attendance_search" model="ir.ui.view">
+        <field name="name">zk.report.daily.attendance.search</field>
+        <field name="model">zk.report.daily.attendance</field>
+        <field name="arch" type="xml" >
+            <search string="Hr Attendance Search">
+                        <filter icon="terp-stock_align_left_24" string="My Attendance" name="my_attendance" domain="[('name.user_id.id', '=', uid)]" />
+                        <filter name="today" string="Today" domain="[('punching_time', '&gt;=', datetime.datetime.now().replace(hour=0, minute=0, second=0)),('punching_time', '&lt;=', datetime.datetime.now().replace(hour=23, minute=59, second=59))]" />
+                        <filter string="Current Month" name="month" domain="[('punching_time', '&gt;=', datetime.datetime.now().strftime('%Y-%m-01'))]" />
+                        <separator/>
+                        <field name="name" string="Name"/>
+                <group>
+                  <filter string = "Device Address" name = "address_id" context ="{'group_by':'address_id'}"/>
+                  <filter string = "Company" name = "company_id" context ="{'group_by':'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_zk_report_daily_attendance_tree" model="ir.ui.view">
+        <field name="name">zk.report.daily.attendance.tree</field>
+        <field name="model">zk.report.daily.attendance</field>
+        <field name="arch" type="xml" >
+           <!-- <tree string="Attendance" create="false" delete="false" colors="green:punch_type in ('0');red:punch_type in ('1');"> -->
+            <tree create = '0' delete= '0'>
+                <field name="punching_day"/>
+                <field name="name"/>
+                <field name="punch_type"/>
+                <field name="attendance_type"/>
+                <field name="punching_time"/>
+                <field name="address_id"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- <record id="view_zk_report_daily_attendance_form" model="ir.ui.view">
+        <field name="name">zk.report.daily.attendance.form</field>
+        <field name="model">zk.report.daily.attendance</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="punching_day"/>
+                    <field name="name"/>
+                    <field name="punch_type"/>
+                    <field name="attendance_type"/>
+                    <field name="punching_time"/>
+                    <field name="address_id"/>
+                </group>
+            </form>
+        </field>
+    </record> -->
+
+
+    <!-- <record id="attendance_scheduler_action" model="ir.actions.act_window">
+        <field name="name">Download Data</field>
+        <field name="res_model">ir.cron</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="kio_hr_zk_attendance.cron_download_data"/>
+    </record>
+    
+    <record id="attendance_scheduler_action_auto_checkout" model="ir.actions.act_window">
+        <field name="name">Auto Checkout</field>
+        <field name="res_model">ir.cron</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="kio_hr_zk_attendance.auto_checkout_cron_job"/>
+    </record>
+
+    <menuitem id="attendance_scheduler_menu" name="Download Data" parent="zk_machine_menu" action="attendance_scheduler_action" />
+    <menuitem id="attendance_scheduler_menu_auto_checkout" name="Auto Checkout" parent="zk_machine_menu" action="attendance_scheduler_action_auto_checkout" /> -->
+
+    <record id="view_cron_jobs_search" model="ir.ui.view">
+            <field name="name">cron.jobs.search</field>
+            <field name="model">ir.cron</field>
+            <field name="arch" type="xml">
+                <search string="Search Cron Jobs">
+                    <!-- Define search filters -->
+                    <filter name="auto_checkout_cron" string="Auto Checkout Cron" domain="[('name', 'ilike', 'Auto Checkout Cron')]"/>
+                    <filter name="download_data_cron" string="Download Data Cron" domain="[('name', 'ilike', 'Download Data Cron')]"/>
+                    <filter name="error_device_connection_cron" string="Error device connection cron" domain="[('name', 'ilike', 'Error device connection cron')]"/>
+                    <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                    <filter name="inactive" string="Inactive" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+    </record>
+
+    <record id="action_zk_report_daily_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance Analysis</field>
+        <field name="res_model">zk.report.daily.attendance</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_my_attendance':1}</field>
+        <field name="search_view_id" ref="view_zk_report_daily_attendance_search" />
+    </record>
+
+    <menuitem id="menu_zk_attendance_view" name="Device Attendance log" action="action_zk_report_daily_attendance" parent="zk_machine_menu" sequence="2" groups="hr_attendance.group_hr_attendance_manager"/>
+</odoo>

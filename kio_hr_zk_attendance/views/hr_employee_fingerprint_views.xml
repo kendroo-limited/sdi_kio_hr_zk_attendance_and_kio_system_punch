@@ -1,0 +1,54 @@
+<odoo>
+    <!-- Tree View for Fingerprint Data -->
+    <record id="view_hr_employee_fingerprint_tree" model="ir.ui.view">
+        <field name="name">hr.employee.fingerprint.tree</field>
+        <field name="model">hr.employee.fingerprint</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Fingerprints">
+                <field name="employee_id"/>
+                <field name="machine_id"/>
+                <field name="device_id"/>
+                <field name="valid"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Fingerprint Data -->
+    <record id="view_hr_employee_fingerprint_form" model="ir.ui.view">
+        <field name="name">hr.employee.fingerprint.form</field>
+        <field name="model">hr.employee.fingerprint</field>
+        <field name="arch" type="xml">
+            <form string="Employee Fingerprint">
+                <sheet>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="machine_id"/>
+                        <field name="finger_id"/>
+                        <field name="device_id"/>
+                        <field name="valid"/>
+                        <!-- <field name="template_data" widget="text"/> -->
+                    </group>
+                    <group>
+                       <field name="template_data" widget="text" readonly = "1" style="white-space: normal;word-break: break-word;" placeholder="Full fingerprint template will be displayed here"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to Open Fingerprint Records -->
+    <record id="action_hr_employee_fingerprint" model="ir.actions.act_window">
+        <field name="name">Employee Fingerprints</field>
+        <field name="res_model">hr.employee.fingerprint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Here you can manage biometric fingerprint data for employees.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item to Access Fingerprint Data -->
+    <menuitem id="zk_machine_fingerprint_view" parent="zk_machine_menu" name="Employee Fingerprints" action="action_hr_employee_fingerprint" sequence="3" groups="kio_hr_zk_attendance.group_hr_attendance_zk"/>
+
+</odoo>

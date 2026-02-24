@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="attendance_dashboard_hr_attendance_form" model="ir.ui.view">
+        <field name="name">hr.attendance.form.inherit.location</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='check_out']" position="after">
+
+                <separator string="Location &amp; Device Info"/>
+
+                <group colspan="4">
+                    <group string="Check-In">
+                        <field name="check_in_lat"  readonly="1"/>
+                        <field name="check_in_long" readonly="1"/>
+                        <field name="check_in_address" nolabel="1"/>
+                    </group>
+
+                    <group string="Check-Out">
+                        <field name="check_out_lat"  readonly="1"/>
+                        <field name="check_out_long" readonly="1"/>
+                        <field name="check_out_address" nolabel="1"/>
+                    </group>
+
+                    <group string="Device">
+                        <field name="browser"  readonly="1"/>
+                        <field name="os_name" readonly="1"/>
+                    </group>
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="attendance_dashboard_hr_attendance_tree" model="ir.ui.view">
+        <field name="name">hr.attendance.tree.inherit.location</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+
+            <!-- Append new columns after check_out -->
+            <xpath expr="//field[@name='check_out']" position="after">
+                <!-- Co-ordinates (hide by default) -->
+                <field name="check_in_lat"  optional="hide"/>
+                <field name="check_in_long" optional="hide"/>
+                <field name="check_out_lat" optional="hide"/>
+                <field name="check_out_long" optional="hide"/>
+                <!-- Addresses -->
+                <field name="check_in_address"  />
+                <field name="check_out_address" />
+                <!-- Device -->
+                <field name="browser"  optional="hide"/>
+                <field name="os_name" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

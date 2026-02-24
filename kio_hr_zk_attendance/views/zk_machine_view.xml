@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_zk_machine_form" model="ir.ui.view">
+        <field name="name">zk.machine.form</field>
+        <field name="model">zk.machine</field>
+        <field name="arch" type="xml">
+            <form string="Biometric Device">
+                <header>
+                    <button name="clear_attendance" type="object" string="Clear All Attendance Log" class="oe_highlight"
+                                icon="fa-remove " style="background-color: red;" confirm="Are you sure to clear attendance data?" groups= "kio_hr_zk_attendance.group_hr_attendance_clear"/>
+                    <button name="download_attendance" type="object" string="Download Data" class="oe_highlight"
+                            icon="fa-download" confirm="Are you sure to download attendance data?" />
+                    <button name="check_device_connection" type="object" string="Check Connection" class="oe_highlight"
+                           icon="fa-link "/>
+                    <button name="upload_employees" type="object" string="Upload Employees" class="oe_highlight"
+                           icon="fa-upload" groups= "kio_hr_zk_attendance.group_hr_attendance_clear"/>
+                    <button name="remove_all_users_from_machine" type="object" string="Remove Employees From Machine" class="oe_highlight"  style="background-color: red;" confirm="Are you sure to clear Employees from machine?" groups= "kio_hr_zk_attendance.group_hr_attendance_clear"
+                           icon="fa-remove"/>
+                    <button name="restart_device" string="Restart Device" type="object" class="oe_highlight" confirm="Are you sure to restart theis device?" icon="fa-refresh"/>
+                    <button name="sync_device_time" string="&#x1F558; Sync Time" type="object" class="btn btn-primary" confirm="Are you sure to sync time with device?"/>
+                    <button name="fetch_fingerprints_from_machine" type="object" string="Backup Fingerprint Data" class="btn-primary" icon="fa-hdd-o"/>
+                    <button name="upload_fingerprint_data" type="object" string="Upload Fingerprint Data" class="btn-success" icon="fa-upload" confirm="Are you sure to upload fingerprint data to the machine?" groups= "kio_hr_zk_attendance.group_hr_attendance_clear"/>
+
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="machine_name" />
+                        <h1>
+                            <field name="machine_name" placeholder="ZKTeco"/>
+                        </h1>
+                    </div>
+    
+                    <div class="oe_title">
+                                <label for="name" />
+                                <h2>
+                                    <field name="name" placeholder="Machine IP"/>
+                                </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="device_no"/>
+                            <field name="port_no"/>
+                            <field name= "protocol"/>
+                        </group>
+                        <group>
+                            <field name="model_id" placeholder="Device Model"/>
+                            <field name='tz'/>
+                            <field name="company_id"/>
+                            <field name="address_id"/>
+                            <field name="current_time" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <h2 style="color: red; text-align: center; margin-top: 20px;">
+                        ⚠️ Note: Turn off the 'Punch State option' in the machine. 
+                        The system automatically calculates and places the attendance.
+                    </h2>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_zk_machine_search" model="ir.ui.view">
+    <field name="name">zk.machine.search</field>
+    <field name="model">zk.machine</field>
+    <field name="arch" type="xml">
+            <search string="Search ZK Machines">
+                <field name="machine_name" string="Machine Name"/>
+                <field name="name" string="Machine IP"/>
+                <filter string="Active" name="active_true" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="active_false" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_zk_machine_tree" model="ir.ui.view">
+        <field name="name">zk.machine.tree</field>
+        <field name="model">zk.machine</field>
+        <field name="arch" type="xml">
+            <tree string="Biometric Machine">
+                <field name="machine_name"/>
+                <field name="name"/>
+                <field name="port_no"/>
+                <field name="address_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" widget="boolean_toggle"/>  
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_zk_machine_kanban" model="ir.ui.view">
+        <field name="name">zk.machine.kanban</field>
+        <field name="model">zk.machine</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1" quick_create="false">
+                <field name="machine_name"/>
+                <field name="name"/>
+                <field name="port_no"/>
+                <field name="address_id"/>
+                <field name="company_id"/>
+                <field name="active"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <!-- Global Click to Open Form View -->
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_details">
+                                <!-- Machine Name (Highlighted) -->
+                                <strong class="o_kanban_record_title" style="color: #2c3e50;">
+                                    <t t-esc="record.machine_name.value"/>
+                                </strong>
+                                
+                                <!-- Machine IP (Highlighted in Blue) -->
+                                <div style="color: #3498db; font-weight: bold;">
+                                    IP: <t t-esc="record.name.value"/>
+                                </div>
+
+                                <div>
+                                    <span class="text-muted">Port:</span>
+                                    <t t-esc="record.port_no.value"/>
+                                </div>
+
+                                <div>
+                                    <span class="text-muted">Address:</span>
+                                    <t t-esc="record.address_id.value"/>
+                                </div>
+
+                                <div t-if="record.company_id">
+                                    <span class="text-muted"><i class="fa fa-building"/> Company:</span>
+                                    <t t-esc="record.company_id.value"/>
+                                </div>
+
+                                <!-- Status Badge -->
+                                <div>
+                                    <span class="text-muted">Status:</span>
+                                    <t t-if="record.active.raw_value">
+                                        <span class="badge badge-success">✅ Active</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge badge-danger">❌ Inactive</span>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Buttons Section -->
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left"/>
+                                    <div class="oe_kanban_bottom_right">
+                                        <!-- Active/Inactive Toggle Button -->
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="zk_machine_action" model="ir.actions.act_window">
+        <field name="name">Machine List</field>
+        <field name="res_model">zk.machine</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <!-- <record id="hr_employee_inherit_form_view" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="device_id"/>
+                <field name="device_password"/>
+                <field name="device_card_id"/>
+                <field name="delete_mark_user" widget="boolean_toggle"/>
+                <button name="action_remove_user_from_device"
+                    string="Remove this user"
+                    type="object"
+                    class="btn-danger"
+                    attrs="{'invisible': [('device_id', '=', False)]}" />
+            </field>
+        </field>
+    </record> -->
+
+    <record id="view_hr_employee_form_inherit_device" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.device</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <page name="hr_settings" position="inside">
+                <group>
+                    <group string="Biometric Settings" name="biometric_group">
+                        <field name="device_id" string="Biometric Device ID"/>
+                        <field name="device_password" string="Device Password"/>
+                        <field name="device_card_id" string="Device Card ID"/>
+                        <button name="action_remove_user_from_device"
+                            string="Remove this employee from device"
+                            type="object"
+                            class="btn-danger"
+                            confirm="Are you sure to remove this employee from biometric machine?"
+                            invisible="not device_id" />
+                    </group>
+                </group>
+            </page>
+        </field>
+    </record>
+
+    <record id="view_res_company_form_inherit" model="ir.ui.view">
+        <field name="name">res.company.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml"><!-- Extend the General Information notebook page -->
+            <notebook position="inside">
+                <page string="HR Employees"><!-- Add your custom fields or widgets here -->
+                    <label for="employee_ids"/>
+                    <field name="employee_ids" widget="many2many_tags"/><!-- <field name="employee_ids" widget="many2many_tags"/> -->
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="action_biometric_scheduled" model="ir.actions.act_window">
+        <field name="name">Biometric Scheduled Actions</field>
+        <field name="res_model">ir.cron</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[("name", "in", ["Auto Checkout Cron", "Download Data Cron","Error device connection cron"])]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+
+    <menuitem id="zk_machine_menu" parent="hr_attendance.menu_hr_attendance_root" sequence="50" name="Biometric Manager" groups="kio_hr_zk_attendance.group_hr_attendance_zk"/>
+    <menuitem id="zk_machine_sub_menu" parent="zk_machine_menu" name="Device Configuration" action="zk_machine_action" sequence="1" groups="kio_hr_zk_attendance.group_hr_attendance_zk"/>
+    <menuitem id="hr_mail" name="HR Mail" parent="hr_attendance.menu_hr_attendance_settings" action="base.action_res_company_form" groups="kio_hr_zk_attendance.group_hr_attendance_zk"/>
+    <menuitem id="biometric_scheduled_id" name="Cron Scheduler" parent="hr_attendance.menu_hr_attendance_settings" action="action_biometric_scheduled" groups="kio_hr_zk_attendance.group_hr_attendance_zk"/>
+
+</odoo>

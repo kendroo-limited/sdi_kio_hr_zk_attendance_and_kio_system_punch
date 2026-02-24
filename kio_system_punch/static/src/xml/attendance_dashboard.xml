@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="kio_system_punch.AttendanceBoard" owl="1">
+        <div class="o_attendance_dashbaord">
+            <style>
+                .o_attendance_dashbaord {
+                    min-height: 95vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: #C0C0C0;
+                }
+                .attendance-card {
+                    padding: 40px;
+                    background-color: #ffffff;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    max-width: 400px;
+                    width: 100%;
+                }
+                .attendance-card h5 {
+                    margin-bottom: 25px;
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: #343a40;
+                }
+                .checkin-btn {
+                    padding: 15px 30px;
+                    font-size: 18px;
+                    border-radius: 10px;
+                    background-color: #007bff;
+                    border: none;
+                    color: white;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
+                    cursor: pointer;
+                }
+                .checkin-btn:hover:not(:disabled) {
+                    background-color: #629900;
+                    transform: scale(1.05);
+                }
+                .checkin-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+                .employee-profile {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+                .employee-avatar {
+                    width: 100px;
+                    height: 100px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 15px;
+                }
+                .employee-name {
+                    font-size: 25px;
+                    font-weight: 600;
+                    color: #343a40;
+                    margin-bottom: 10px;
+                }
+                .fa-spinner {
+                    display: inline-block;
+                    animation: spin 1s linear infinite;
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .location-info {
+                    background-color: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 15px;
+                    text-align: left;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    margin-top: 20px;
+                }
+                .location-header {
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                    color: #495057;
+                }
+                .location-details {
+                    font-size: 14px;
+                    color: #6c757d;
+                    line-height: 1.5;
+                }
+                .location-details .detail-item {
+                    margin-bottom: 8px;
+                }
+                .location-details .detail-label {
+                    font-weight: 600;
+                    color: #495057;
+                }
+            </style>
+
+            <div class="attendance-wrapper">
+                <div class="attendance-card">
+                    <t t-if="state.employee">
+                        <div class="employee-profile">
+                            <img t-att-src="state.employee.image_url" class="employee-avatar" alt="Employee"/>
+                            <div class="employee-name">
+                                <t t-esc="state.employee.name"/>
+                            </div>
+                        </div>
+                    </t>
+
+                    <h3>Welcome!</h3>
+
+                    <button
+                        class="checkin-btn"
+                        t-on-click="onPunchClick"
+                        t-att-disabled="state.isLoading">
+                        <t t-if="state.isLoading">
+                            <i class="fa fa-spinner fa-spin"></i> Loading...
+                        </t>
+                        <t t-else="">
+                            Check In/Out <i class="fa fa-sign-out" aria-hidden="true"></i>
+                        </t>
+                    </button>
+
+                    <t t-if="state.locationInfo">
+                        <div class="location-info">
+                            <div class="location-header">
+                                <i class="fa fa-map-marker" style="color: #007bff; margin-right: 5px;"></i>
+                                <strong>Location Information</strong>
+                            </div>
+                            <div class="location-details">
+                                <t t-if="state.locationInfo.lat and state.locationInfo.long">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Address: </span>
+                                        <t t-esc="state.locationInfo.address or 'Unknown location'"/>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Location: </span>
+                                        <t t-esc="state.locationInfo.address or 'Not available'"/>
+                                    </div>
+                                </t>
+                                <div class="detail-item">
+                                    <span class="detail-label">Time: </span>
+                                    <t t-esc="state.locationInfo.punch_time or new Date().toLocaleString()"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
