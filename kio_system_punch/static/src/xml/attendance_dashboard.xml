@@ -112,17 +112,33 @@
 
                     <h3>Welcome!</h3>
 
-                    <button
-                        class="checkin-btn"
-                        t-on-click="onPunchClick"
-                        t-att-disabled="state.isLoading">
-                        <t t-if="state.isLoading">
-                            <i class="fa fa-spinner fa-spin"></i> Loading...
-                        </t>
-                        <t t-else="">
-                            Check In/Out <i class="fa fa-sign-out" aria-hidden="true"></i>
-                        </t>
-                    </button>
+                    <t t-if="!state.isCheckedIn">
+                        <button
+                            class="checkin-btn"
+                            t-on-click="onCheckInClick"
+                            t-att-disabled="state.isLoading">
+                            <t t-if="state.isLoading">
+                                <i class="fa fa-spinner fa-spin"></i> Loading...
+                            </t>
+                            <t t-else="">
+                                Check In <i class="fa fa-sign-in" aria-hidden="true"></i>
+                            </t>
+                        </button>
+                    </t>
+                    <t t-else="">
+                        <button
+                            style="background-color: #ff9933;"
+                            class="checkin-btn"
+                            t-on-click="onCheckOutClick"
+                            t-att-disabled="state.isLoading">
+                            <t t-if="state.isLoading">
+                                <i class="fa fa-spinner fa-spin"></i> Loading...
+                            </t>
+                            <t t-else="">
+                                Check Out <i class="fa fa-sign-out" aria-hidden="true"></i>
+                            </t>
+                        </button>
+                    </t>
 
                     <t t-if="state.locationInfo">
                         <div class="location-info">

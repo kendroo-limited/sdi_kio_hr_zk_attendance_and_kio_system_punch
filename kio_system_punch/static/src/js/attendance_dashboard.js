@@ -16,6 +16,7 @@ export class AttendanceDashboard extends Component {
             employee: null,
             isLoading: false,
             locationInfo: null,
+            isCheckedIn: false,
         });
 
         onWillStart(async () => {
@@ -71,6 +72,7 @@ export class AttendanceDashboard extends Component {
                         title: "Success",
                     });
                 }
+                this.state.isCheckedIn = !this.state.isCheckedIn;
             } catch (error) {
                 console.error("Punch error:", error);
                 this.notification.add("Failed to punch attendance: " + error.message, {
@@ -150,6 +152,14 @@ export class AttendanceDashboard extends Component {
                 maximumAge: 30000            // Allow cached location up to 30 seconds old
             }
         );
+    }
+
+    async onCheckInClick() {
+        await this.onPunchClick();
+    }
+
+    async onCheckOutClick() {
+        await this.onPunchClick();
     }
 
     detectBrowser() {
