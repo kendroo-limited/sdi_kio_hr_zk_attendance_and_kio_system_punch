@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, time
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 from geopy.geocoders import Nominatim
 import pytz
 
@@ -9,6 +8,18 @@ import pytz
 class AttendanceDashboard(models.Model):
     _name = 'attendance.dashboard'
     _description = 'Attendance Dashboard'
+
+    @api.model
+    def get_attendance_state(self):
+        employee = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.uid)], limit=1)
+        if not employee:
+            return {'is_checked_in': False}
+
+        open_attendance = self.env['hr.attendance'].sudo().search([
+            ('employee_id', '=', employee.id),
+            ('check_out', '=', False),
+        ], order='check_in desc', limit=1)
+        return {'is_checked_in': bool(open_attendance)}
 
     @api.model
     def punch_attendance(self, lat=False, long=False, browser="", os_name=""):
@@ -24,8 +35,6 @@ class AttendanceDashboard(models.Model):
         
         # Use UTC time for database operations
         now = utc_now
-        today_start = datetime.combine(now.date(), time.min)
-        today_end = datetime.combine(now.date(), time.max)
 
         address = ""
         if lat and long:
@@ -37,14 +46,13 @@ class AttendanceDashboard(models.Model):
             except Exception as e:
                 address = f"[Location Error: {str(e)}]"
 
-        today_attendance = self.env['hr.attendance'].sudo().search([
+        open_attendance = self.env['hr.attendance'].sudo().search([
             ('employee_id', '=', employee.id),
-            ('check_in', '>=', today_start),
-            ('check_in', '<=', today_end),
-        ], limit=1)
+            ('check_out', '=', False),
+        ], order='check_in desc', limit=1)
 
-        if today_attendance:
-            today_attendance.write({
+        if open_attendance:
+            open_attendance.write({
                 'check_out': now,
                 'check_out_lat': lat,
                 'check_out_long': long,
@@ -52,8 +60,9 @@ class AttendanceDashboard(models.Model):
                 'browser': browser,
                 'os_name': os_name,
                 'check_out_location': 'system',
-                'total_punches': today_attendance.total_punches + 1
+                'total_punches': open_attendance.total_punches + 1
             })
+            is_checked_in = False
         else:
             self.env['hr.attendance'].sudo().create({
                 'employee_id': employee.id,
@@ -66,6 +75,7 @@ class AttendanceDashboard(models.Model):
                 'check_in_location': 'system',
                 'total_punches': 1
             })
+            is_checked_in = True
 
         return {
             'effect': {
@@ -73,6 +83,7 @@ class AttendanceDashboard(models.Model):
                 'message': 'Punched Successfully! 🎉',
                 'type': 'rainbow_man',
             },
+            'is_checked_in': is_checked_in,
             'location_info': {
                 'address': address,
                 'lat': lat,

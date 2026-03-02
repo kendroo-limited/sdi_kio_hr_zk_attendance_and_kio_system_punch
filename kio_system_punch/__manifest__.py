@@ -1,6 +1,6 @@
 {
     'name': "KIO System Punch",
-    'version': '17.0.1.0.3',
+    'version': '17.0.1.0.4',
     'author': 'Daffodil Software Limited',
     'summary': """Accept multiple punch and connect with zk machine""",
     'description': """Accept multiple punch and connect with zk machine""",
@@ -14,7 +14,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/dashboard_views.xml',
-        'views/att_inheritance.xml'
     ],
     'assets': {
         'web.assets_backend': [

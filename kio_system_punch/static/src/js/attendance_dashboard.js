@@ -19,9 +19,45 @@ export class AttendanceDashboard extends Component {
             isCheckedIn: false,
         });
 
+        const storedState = this.loadStoredAttendanceState();
+        if (storedState !== null) {
+            this.state.isCheckedIn = storedState;
+        }
+
         onWillStart(async () => {
             await this.fetchEmployeeInfo();
+            await this.fetchAttendanceState();
         });
+    }
+
+    getStorageKey() {
+        return `kio_system_punch.attendance_state.${this.env.services.user.userId}`;
+    }
+
+    loadStoredAttendanceState() {
+        try {
+            const value = window.localStorage.getItem(this.getStorageKey());
+            if (value === null) {
+                return null;
+            }
+            return value === "1";
+        } catch (error) {
+            console.warn("Unable to read attendance state from storage:", error);
+            return null;
+        }
+    }
+
+    saveStoredAttendanceState(isCheckedIn) {
+        try {
+            window.localStorage.setItem(this.getStorageKey(), isCheckedIn ? "1" : "0");
+        } catch (error) {
+            console.warn("Unable to persist attendance state:", error);
+        }
+    }
+
+    setCheckedInState(isCheckedIn) {
+        this.state.isCheckedIn = Boolean(isCheckedIn);
+        this.saveStoredAttendanceState(this.state.isCheckedIn);
     }
 
     async fetchEmployeeInfo() {
@@ -35,6 +71,21 @@ export class AttendanceDashboard extends Component {
         if (result.length > 0) {
             this.state.employee = result[0];
             this.state.employee.image_url = `/web/image?model=hr.employee&id=${this.state.employee.id}&field=image_1920`;
+        }
+    }
+
+    async fetchAttendanceState() {
+        try {
+            const result = await this.orm.call(
+                "attendance.dashboard",
+                "get_attendance_state",
+                []
+            );
+            if (result && typeof result.is_checked_in === "boolean") {
+                this.setCheckedInState(result.is_checked_in);
+            }
+        } catch (error) {
+            console.warn("Unable to load attendance state from server:", error);
         }
     }
 
@@ -72,7 +123,12 @@ export class AttendanceDashboard extends Component {
                         title: "Success",
                     });
                 }
-                this.state.isCheckedIn = !this.state.isCheckedIn;
+
+                if (result && typeof result.is_checked_in === "boolean") {
+                    this.setCheckedInState(result.is_checked_in);
+                } else {
+                    this.setCheckedInState(!this.state.isCheckedIn);
+                }
             } catch (error) {
                 console.error("Punch error:", error);
                 this.notification.add("Failed to punch attendance: " + error.message, {
